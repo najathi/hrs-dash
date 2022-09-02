@@ -44,9 +44,7 @@ function apis(history = null) {
             }
 
             if (error.response.status === 401) {
-
-                //logoutHandle(history);
-
+                logoutHandle(history);
             } else {
                 return new Promise((resolve, reject) => {
                     reject(error);
@@ -66,11 +64,11 @@ function logoutHandle(history = null) {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
 
-    // if (history) {
-    //     history.push("/");
-    // } else {
-    //     window.location = "/";
-    // }
+    if (history) {
+        history.push("/");
+    } else {
+        window.location = "/";
+    }
 
 }
 
