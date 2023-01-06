@@ -20,8 +20,9 @@
           position: absolute;
           top: 0;
           right: 0;
-          padding: 5px;
-          font-size: 12px;
+          padding: .5rem 1rem;
+          font-size: 1.2rem;
+          font-weight: bold;
           color: #7451f8;
           background-color: #7551f818;
           cursor: pointer;
@@ -58,6 +59,7 @@
               .itemValue {
                 font-weight: 300;
               }
+
             }
           }
         }
@@ -76,9 +78,17 @@
     }
 
     .title {
-      font-size: 16px;
-      color: lightgray;
-      margin-bottom: 20px;
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
     }
+  }
+}
+
+.itemValueImage {
+  padding: 2rem;
+  display: flex;
+
+  .itemImg {
+    padding: 0 1rem;
   }
 }

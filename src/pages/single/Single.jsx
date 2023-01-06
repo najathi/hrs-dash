@@ -1,10 +1,27 @@
 import "./single.scss";
+import { Link, useLocation } from "react-router-dom";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
-import Chart from "../../components/chart/Chart";
-import List from "../../components/table/Table";
+import moment from "moment";
 
-const Single = () => {
+const Single = (props) => {
+
+  const { state, pathname } = useLocation();
+
+  const path = pathname.split("/")[1];
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  const data = { ...state.data };
+
+  if (data.hasOwnProperty("__v"))
+    delete data["__v"];
+
+  if (data.hasOwnProperty("password"))
+    delete data["password"];
+
   return (
     <div className="single">
       <Sidebar />
@@ -12,44 +29,64 @@ const Single = () => {
         <Navbar />
         <div className="top">
           <div className="left">
-            <div className="editButton">Edit</div>
-            <h1 className="title">Information</h1>
+            <Link
+              to={`/${path}/${data._id}/edit`}
+              state={{ data: data }}
+              className="editButton"
+            >
+              Edit
+            </Link>
+            <h1 className="title text-dark">{capitalizeFirstLetter(path)} Details</h1>
             <div className="item">
-              <img
-                src="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
-                alt=""
-                className="itemImg"
-              />
+
               <div className="details">
-                <h1 className="itemTitle">Jane Doe</h1>
-                <div className="detailItem">
-                  <span className="itemKey">Email:</span>
-                  <span className="itemValue">janedoe@gmail.com</span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Phone:</span>
-                  <span className="itemValue">+1 2345 67 89</span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Address:</span>
-                  <span className="itemValue">
-                    Elton St. 234 Garden Yd. NewYork
-                  </span>
-                </div>
-                <div className="detailItem">
-                  <span className="itemKey">Country:</span>
-                  <span className="itemValue">USA</span>
-                </div>
+                {Object.keys(data).map((key, idx) => {
+
+                  if (key === "photos" && data["photos"]) {
+                    return (
+                      <div className="detailItem">
+                        <span className="itemKey">{key}:</span>
+                        <div className="itemValueImage">
+                          {state.data[key].map((item, idx2) => (
+                            <img
+                              key={idx2}
+                              src={item}
+                              alt=""
+                              className="itemImg"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  if (key === "createdAt" || key === "updatedAt") {
+                    return (
+                      <div className="detailItem" key={idx}>
+                        <span className="itemKey">{key}:</span>
+                        <span className="itemValue">{moment(data[key]).format('llll')}</span>
+                      </div>
+                    );
+                  }
+
+                  if (typeof data[key] === "boolean") {
+                    <div className="detailItem" key={idx}>
+                      <span className="itemKey">{key}:</span>
+                      <span className="itemValue">{data[key] ? "Tick" : "Cross"}</span>
+                    </div>
+                  }
+
+                  return (
+                    <div className="detailItem" key={idx}>
+                      <span className="itemKey">{key}:</span>
+                      <span className="itemValue">{data[key]}</span>
+                    </div>
+                  );
+                })}
               </div>
+
             </div>
           </div>
-          <div className="right">
-            <Chart aspect={3 / 1} title="User Spending ( Last 6 Months)" />
-          </div>
-        </div>
-        <div className="bottom">
-        <h1 className="title">Last Transactions</h1>
-          <List/>
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import "./datatable.scss";
+import { toast } from 'react-toastify';
 import { DataGrid } from "@mui/x-data-grid";
 import { userColumns, userRows } from "../../datatablesource";
 import { Link, useLocation } from "react-router-dom";
@@ -6,11 +7,13 @@ import { useEffect, useState } from "react";
 import useFetch from "../../hooks/useFetch";
 import apis from "../../apis";
 
-const Datatable = ({columns}) => {
-  
+
+const Datatable = ({ columns }) => {
   const location = useLocation();
   const path = location.pathname.split("/")[1];
+
   const [list, setList] = useState();
+
   const { data, loading, error } = useFetch(`/${path}`);
 
   useEffect(() => {
@@ -19,9 +22,23 @@ const Datatable = ({columns}) => {
 
   const handleDelete = async (id) => {
     try {
-      await apis().delete(`/${path}/${id}`);
+      const res = await apis().delete(`/${path}/${id}`);
       setList(list.filter((item) => item._id !== id));
-    } catch (err) {}
+      toast.success(res.data, {
+        position: "top-right",
+      });
+    } catch (err) {
+      if (err.response) {
+        toast.error(err.response.data.message, {
+          position: 'top-right',
+        });
+        return;
+      }
+
+      toast.error("Something went wrong!", {
+        position: 'top-right',
+      });
+    }
   };
 
   const actionColumn = [
@@ -32,7 +49,11 @@ const Datatable = ({columns}) => {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            <Link to="/users/test" style={{ textDecoration: "none" }}>
+            <Link
+              to={`/${path}/${params.row._id}`}
+              state={{ data: params.row }}
+              style={{ textDecoration: "none" }}
+            >
               <div className="viewButton">View</div>
             </Link>
             <div
@@ -46,11 +67,16 @@ const Datatable = ({columns}) => {
       },
     },
   ];
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        Add New User
-        <Link to={ `/${path}/new`} className="link">
+        {capitalizeFirstLetter(path)}
+        <Link to={`/${path}/new`} className="link">
           Add New
         </Link>
       </div>
@@ -61,7 +87,8 @@ const Datatable = ({columns}) => {
         pageSize={9}
         rowsPerPageOptions={[9]}
         checkboxSelection
-        getRowId={row=>row._id}
+        getRowId={row => row._id}
+        disableSelectionOnClick={true}
       />
     </div>
   );

@@ -3,6 +3,7 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useState } from "react";
+import { toast } from 'react-toastify';
 import { roomInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import apis from "../../apis";
@@ -24,7 +25,16 @@ const NewRoom = () => {
     try {
       await apis().post(`/rooms/${hotelId}`, { ...info, roomNumbers });
     } catch (err) {
-      console.log(err);
+      if (err.response) {
+        toast.error(err.response.data.message, {
+          position: 'top-right',
+        });
+        return;
+      }
+
+      toast.error("Something went wrong!", {
+        position: 'top-right',
+      });
     }
   };
 

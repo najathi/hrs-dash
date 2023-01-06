@@ -32,7 +32,6 @@ const useFetch = (url) => {
         }
         setLoading(false);
     };
-    console.log("UseFetch/Admin " + error);
     return { data, loading, error, reFetch };
 }
 
